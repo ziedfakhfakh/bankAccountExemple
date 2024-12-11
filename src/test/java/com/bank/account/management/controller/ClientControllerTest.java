@@ -1,10 +1,6 @@
 package com.bank.account.management.controller;
 
-import com.bank.account.management.dto.AddressDto;
-import com.bank.account.management.dto.BankAccountDto;
 import com.bank.account.management.dto.ClientDto;
-import com.bank.account.management.model.Address;
-import com.bank.account.management.model.type.BankAccountType;
 import com.bank.account.management.service.ClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

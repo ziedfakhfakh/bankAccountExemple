@@ -1,26 +1,37 @@
 package com.bank.account.management.service;
 
+import com.bank.account.management.dto.AccountStatementDto;
 import com.bank.account.management.dto.BankAccountCreationRequest;
 import com.bank.account.management.dto.BankAccountDto;
 import com.bank.account.management.exception.InvalidInputException;
 import com.bank.account.management.mapper.BankAccountMapper;
+import com.bank.account.management.mapper.BankAccountTransactionMapper;
 import com.bank.account.management.model.BankAccount;
+import com.bank.account.management.model.BankAccountTransaction;
 import com.bank.account.management.model.Client;
 import com.bank.account.management.model.CurrentAccount;
 import com.bank.account.management.model.type.BankAccountStatus;
 import com.bank.account.management.model.type.BankAccountType;
 import com.bank.account.management.repository.BankAccountRepository;
+import com.bank.account.management.repository.BankAccountTransactionRepository;
 import com.bank.account.management.repository.ClientRepository;
 import com.bank.account.management.service.impl.BankAccountServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.data.domain.SliceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
@@ -36,6 +47,13 @@ class BankAccountServiceTest {
     @Mock
     private ClientRepository clientRepository;
 
+    @Mock
+    private BankAccountTransactionRepository bankAccountTransactionRepository;
+
+    @Mock
+    private BankAccountTransactionMapper bankAccountTransactionMapper;
+
+
     private BankAccountService bankAccountService;
 
     private BankAccountCreationRequest validRequest;
@@ -43,7 +61,7 @@ class BankAccountServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.bankAccountService = new BankAccountServiceImpl(bankAccountRepository, clientRepository, bankAccountMapper);
+        this.bankAccountService = new BankAccountServiceImpl(bankAccountRepository, bankAccountTransactionRepository, clientRepository, bankAccountMapper, bankAccountTransactionMapper);
 
         validRequest = new BankAccountCreationRequest(BankAccountType.CURRENT_ACCOUNT, "accountNumber", "customerId", 1000.0, 500.0, 0);
         invalidRequest = new BankAccountCreationRequest(null, "accountNumber", "customerId", 1000.0, 500.0, 0);
@@ -95,6 +113,29 @@ class BankAccountServiceTest {
         });
         //THEN
         assertEquals("java.lang.RuntimeException: Database error", thrown.getMessage());
+    }
+
+    @Test
+    void getAccountStatementBy_ShouldReturnAccountStatement_WhenBankAccountExists() {
+        //GIVEN
+        BankAccount bankAccount = new BankAccount();
+        BankAccountTransaction transaction1 = new BankAccountTransaction();
+        BankAccountTransaction transaction2 = new BankAccountTransaction();
+
+        Slice<BankAccountTransaction> transactions = new SliceImpl<>(Arrays.asList(transaction1, transaction2), PageRequest.of(0, 5), true);
+
+        when(bankAccountRepository.findByAccountNumber("accountNumber")).thenReturn(Optional.of(bankAccount));
+        when(bankAccountTransactionRepository.findByBankAccount_accountNumber("accountNumber", PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "creationDate"))))
+                .thenReturn(transactions);
+        when(bankAccountMapper.toBankAccountDto(bankAccount)).thenReturn(
+                new BankAccountDto("accountNumber",  BankAccountType.CURRENT_ACCOUNT, 1000.0, null)
+        );
+        when(bankAccountTransactionMapper.toBankAccountTransactionDtos(transactions.getContent())).thenReturn(null); // Mocked DTO
+        //WHEN
+        AccountStatementDto accountStatementDto = this.bankAccountService.getAccountStatementBy("accountNumber", 0, 5);
+        //THEN
+        assertFalse(accountStatementDto.isLast());
+        assertEquals(accountStatementDto.bankAccount().accountNumber(), "accountNumber");
     }
 
 }

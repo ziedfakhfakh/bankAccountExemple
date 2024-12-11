@@ -1,11 +1,9 @@
 package com.bank.account.management.controller;
 
 import com.bank.account.management.dto.BankAccountDto;
-import com.bank.account.management.model.BankAccount;
 import com.bank.account.management.service.BankAccountOperationsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -54,4 +54,3 @@ class BankAccountControllerTest {
         verify(bankAccountService, times(1)).createBankAccount(request);
     }
 }
-

@@ -22,7 +22,7 @@ import java.util.UUID;
 @SuperBuilder
 @DiscriminatorColumn(name = "Bank_account_type", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(indexes = {@Index(name = "idx_account_number", columnList = "account_number")})
+//@Table(indexes = {@Index(name = "idx_account_number", columnList = "account_number")})
 public class BankAccount implements Serializable {
 
     @Id

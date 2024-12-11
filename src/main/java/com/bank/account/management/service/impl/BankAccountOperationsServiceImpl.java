@@ -54,7 +54,7 @@ public class BankAccountOperationsServiceImpl implements BankAccountOperationsSe
                 throw new InvalidInputException("There is not enough balance to withdraw the following amount: "  + amount);
             }
             bankAccount.setBalance(bankAccount.getBalance() + amount);
-            addTransactionForBankAccount(amount, bankAccount, AccountTransactionType.DEPOSIT);
+            addTransactionForBankAccount(amount, bankAccount, AccountTransactionType.WITHDRAWAL);
             return bankAccountMapper.toBankAccountDto(bankAccountRepository.save(bankAccount));
 
         }).orElseThrow(() -> new BankAccountNotFoundException("Bank account with number: " + accountNumber + " not found"));
