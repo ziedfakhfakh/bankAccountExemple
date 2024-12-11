@@ -4,16 +4,17 @@ import com.bank.account.management.dto.BankAccountDto;
 import com.bank.account.management.mapper.BankAccountMapper;
 import com.bank.account.management.model.BankAccount;
 import com.bank.account.management.model.CurrentAccount;
+import com.bank.account.management.model.type.AccountTransactionType;
 import com.bank.account.management.model.type.BankAccountType;
 import com.bank.account.management.repository.BankAccountRepository;
 import com.bank.account.management.service.impl.BankAccountOperationsServiceImpl;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.bank.account.management.model.type.AccountTransactionType;
 
 import java.util.Optional;
 
@@ -102,6 +103,7 @@ class BankAccountOperationsServiceTest {
 
     @Test
     void testWithdrawal_withValidData() {
+        //GIVEN
         CurrentAccount bankAccount = CurrentAccount.builder()
                 .accountNumber("123456")
                 .balance(500.0)
@@ -114,7 +116,9 @@ class BankAccountOperationsServiceTest {
                 .thenReturn(bankAccountDto);
         Mockito.when(bankAccountRepository.save(Mockito.any(BankAccount.class)))
                 .thenReturn(bankAccount);
+        //WHENE
         BankAccountDto result = bankAccountOperationsService.withdrawal("123456", -100.0);
+        //THEN
         Assertions.assertNotNull(result);
         Assertions.assertEquals(520.0, result.balance());
         Mockito.verify(bankAccountRepository).save(bankAccount);
@@ -153,8 +157,4 @@ class BankAccountOperationsServiceTest {
         //THEN
         assertEquals("The amount must be less than 0", exception.getMessage());
     }
-
-
-
-
 }

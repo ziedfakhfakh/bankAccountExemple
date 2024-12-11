@@ -3,7 +3,7 @@ package com.bank.account.management.service.impl;
 import com.bank.account.management.dto.BankAccountCreationRequest;
 import com.bank.account.management.dto.BankAccountDto;
 import com.bank.account.management.exception.ClientNotFoundException;
-import com.bank.account.management.exception.InvalidBankAccountTypeException;
+import com.bank.account.management.exception.InvalidInputException;
 import com.bank.account.management.mapper.BankAccountMapper;
 import com.bank.account.management.model.BankAccount;
 import com.bank.account.management.model.Client;
@@ -33,7 +33,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public BankAccountDto createBankAccount(BankAccountCreationRequest request) {
         if (request.bankAccountType() == null) {
-            throw new InvalidBankAccountTypeException("Type of Bank Account is Null: ");
+            throw new InvalidInputException("Type of Bank Account is Null");
         }
         Client client = this.clientRepository.findClientByCustomerId(request.customerId()).orElseThrow(
                 () -> new ClientNotFoundException("Client with customerId: " + request.customerId() + " Not Found"));
@@ -54,7 +54,7 @@ public class BankAccountServiceImpl implements BankAccountService {
                                 .savingsInterestRate(request.savingsInterestRate())
                                 .build();
                         default ->
-                                throw new InvalidBankAccountTypeException("Type of Bank Account is invalid: " + request.bankAccountType());
+                                throw new InvalidInputException("Type of Bank Account is invalid: " + request.bankAccountType());
                     };
             return this.bankAccountMapper.toBankAccountDto(this.bankAccountRepository.save(bankAccount));
         } catch (Exception e) {

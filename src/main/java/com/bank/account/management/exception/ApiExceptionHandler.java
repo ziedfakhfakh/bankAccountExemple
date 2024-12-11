@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionHandler {
 
 
-    @ExceptionHandler(InvalidBankAccountTypeException.class)
-    public ResponseEntity<String> handleInvalidBankAccountTypeException(InvalidBankAccountTypeException e) {
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<String> handleInvalidBankAccountTypeException(InvalidInputException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

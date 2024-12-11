@@ -2,7 +2,6 @@ package com.bank.account.management.service;
 
 import com.bank.account.management.dto.ClientDto;
 import com.bank.account.management.mapper.ClientMapper;
-import com.bank.account.management.model.Address;
 import com.bank.account.management.model.Client;
 import com.bank.account.management.repository.ClientRepository;
 import com.bank.account.management.service.impl.ClientServiceImpl;

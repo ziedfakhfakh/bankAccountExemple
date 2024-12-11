@@ -24,4 +24,10 @@ public class BankAccountOperationsController {
         return ResponseEntity.ok(bankAccountOperationsService.deposit(accountNumber, amount));
     }
 
+    @PutMapping("/{accountNumber}/withdrawal")
+    @Operation(summary = "withdrawal money")
+    public ResponseEntity<BankAccountDto> withdrawal(@PathVariable String accountNumber, @RequestParam double amount) {
+        return ResponseEntity.ok(bankAccountOperationsService.withdrawal(accountNumber, amount));
+    }
+
 }

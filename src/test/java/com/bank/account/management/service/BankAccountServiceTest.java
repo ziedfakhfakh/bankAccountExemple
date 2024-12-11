@@ -2,7 +2,7 @@ package com.bank.account.management.service;
 
 import com.bank.account.management.dto.BankAccountCreationRequest;
 import com.bank.account.management.dto.BankAccountDto;
-import com.bank.account.management.exception.InvalidBankAccountTypeException;
+import com.bank.account.management.exception.InvalidInputException;
 import com.bank.account.management.mapper.BankAccountMapper;
 import com.bank.account.management.model.BankAccount;
 import com.bank.account.management.model.Client;
@@ -61,13 +61,13 @@ class BankAccountServiceTest {
                 .overdraft(500.0).build();
 
         BankAccountDto bankAccountDto = new BankAccountDto("accountNumber",  BankAccountType.CURRENT_ACCOUNT, 1000.0, null);
-
+        //WHEN
         when(bankAccountRepository.save(any())).thenReturn(mockBankAccount);
         when(clientRepository.findClientByCustomerId(anyString())).thenReturn(Optional.of(client));
         when(bankAccountMapper.toBankAccountDto(any())).thenReturn(bankAccountDto);
 
         BankAccountDto result = bankAccountService.createBankAccount(validRequest);
-
+        //THEN
         assertNotNull(result);
         assertEquals("accountNumber", result.accountNumber());
         assertEquals(BankAccountType.CURRENT_ACCOUNT, result.type());
@@ -77,25 +77,23 @@ class BankAccountServiceTest {
 
     @Test
     void testCreateBankAccountWithInvalidType() {
-        // Act & Assert
-        InvalidBankAccountTypeException thrown = assertThrows(InvalidBankAccountTypeException.class, () -> {
+        InvalidInputException thrown = assertThrows(InvalidInputException.class, () -> {
             bankAccountService.createBankAccount(invalidRequest);
         });
-
-        assertEquals("Type of Bank Account is Null: ", thrown.getMessage());
+        assertEquals("Type of Bank Account is Null", thrown.getMessage());
     }
 
     @Test
     void testCreateBankAccountWithExceptionDuringSave() {
-        // Arrange
+        //GIVEN
         when(bankAccountRepository.save(any(BankAccount.class))).thenThrow(new RuntimeException("Database error"));
         when(clientRepository.findClientByCustomerId(anyString())).thenReturn(Optional.of(new Client()));
 
-        // Act & Assert
+        //WHEN
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
             bankAccountService.createBankAccount(validRequest);
         });
-
+        //THEN
         assertEquals("java.lang.RuntimeException: Database error", thrown.getMessage());
     }
 

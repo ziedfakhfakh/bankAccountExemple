@@ -14,4 +14,8 @@ public class CurrentAccount extends BankAccount {
 
     private double overdraft = 0;
 
+    public boolean isHasBalance(double amount){
+        return amount + this.overdraft + this.balance >= 0;
+    }
+
 }
