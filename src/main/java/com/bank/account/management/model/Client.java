@@ -31,7 +31,7 @@ public class Client {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
