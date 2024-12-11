@@ -1,5 +1,6 @@
 package com.bank.account.management.controller;
 
+import com.bank.account.management.dto.AddressDto;
 import com.bank.account.management.dto.BankAccountDto;
 import com.bank.account.management.dto.ClientDto;
 import com.bank.account.management.model.Address;
@@ -34,9 +35,9 @@ class ClientControllerTest {
     void createClient_ShouldReturnCreatedClient() {
 
         //GIVEN
-        ClientDto clientDto = new ClientDto("customer123", "firstName", "lastName", "email@email.com", new Address());
+        ClientDto clientDto = new ClientDto("customer123", "firstName", "lastName", "email@email.com", null);
 
-        ClientDto responseDto = new ClientDto("customer123", "firstName", "lastName", "email@email.com", new Address());
+        ClientDto responseDto = new ClientDto("customer123", "firstName", "lastName", "email@email.com", null);
 
         //WHEN
         when(clientService.createClient(clientDto)).thenReturn(responseDto);

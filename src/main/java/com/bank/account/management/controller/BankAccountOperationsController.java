@@ -21,7 +21,7 @@ public class BankAccountOperationsController {
     @PutMapping("/{accountNumber}/deposit")
     @Operation(summary = "Deposit money")
     public ResponseEntity<BankAccountDto> deposit(@PathVariable String accountNumber, @RequestParam double amount) {
-        return null;
+        return ResponseEntity.ok(bankAccountOperationsService.deposit(accountNumber, amount));
     }
 
 }

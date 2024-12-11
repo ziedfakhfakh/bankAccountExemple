@@ -43,7 +43,7 @@ class BankAccountControllerTest {
                 0
         );
 
-        BankAccountDto responseDto = new BankAccountDto("123456789", "customerId", BankAccountType.CURRENT_ACCOUNT, 1000.0);
+        BankAccountDto responseDto = new BankAccountDto("123456789", BankAccountType.CURRENT_ACCOUNT, 1000.0, null);
 
         //WHEN
         when(bankAccountService.createBankAccount(request)).thenReturn(responseDto);

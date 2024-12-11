@@ -23,7 +23,7 @@ public class ClientController {
     @PostMapping
     @Operation(summary = "Create new Client")
     public ResponseEntity<ClientDto> createBankAccount(@RequestBody ClientDto clientDto) {
-        return null;
+        return new ResponseEntity<>(clientService.createClient(clientDto), HttpStatus.CREATED);
     }
 
 }

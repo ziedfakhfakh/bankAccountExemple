@@ -36,7 +36,7 @@ class BankAccountOperationsControllerTest {
         String accountNumber = "123456789";
         double depositAmount = 500.0;
 
-        BankAccountDto expectedResponse = new BankAccountDto(accountNumber, "customerId", BankAccountType.CURRENT_ACCOUNT, 1500.0);
+        BankAccountDto expectedResponse = new BankAccountDto(accountNumber,  BankAccountType.CURRENT_ACCOUNT, 1500.0, null);
 
         when(bankAccountOperationsService.deposit(accountNumber, depositAmount)).thenReturn(expectedResponse);
 

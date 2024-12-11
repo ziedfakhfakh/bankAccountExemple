@@ -1,7 +1,9 @@
 package com.bank.account.management.service;
 
 import com.bank.account.management.dto.BankAccountDto;
+import com.bank.account.management.mapper.BankAccountMapper;
 import com.bank.account.management.model.BankAccount;
+import com.bank.account.management.model.type.BankAccountType;
 import com.bank.account.management.repository.BankAccountRepository;
 import com.bank.account.management.service.impl.BankAccountOperationsServiceImpl;
 import org.junit.jupiter.api.*;
@@ -22,13 +24,15 @@ class BankAccountOperationsServiceTest {
 
     @Mock
     private BankAccountRepository bankAccountRepository;
+    @Mock
+    private BankAccountMapper bankAccountMapper;
 
     private BankAccountOperationsService bankAccountOperationsService;
 
 
     @BeforeEach
     void setUp() {
-        this.bankAccountOperationsService = new BankAccountOperationsServiceImpl(bankAccountRepository);
+        this.bankAccountOperationsService = new BankAccountOperationsServiceImpl(bankAccountRepository, bankAccountMapper);
     }
 
     @Test
@@ -43,9 +47,11 @@ class BankAccountOperationsServiceTest {
                 .balance(1000.0)
                 .build();
 
+        BankAccountDto bankAccountDto = new BankAccountDto(accountNumber, BankAccountType.CURRENT_ACCOUNT, 1500.0, null);
 
         when(bankAccountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(mockBankAccount));
         when(bankAccountRepository.save(any(BankAccount.class))).thenReturn(mockBankAccount);
+        when(bankAccountMapper.toBankAccountDto(any(BankAccount.class))).thenReturn(bankAccountDto);
 
         //WHEN
         BankAccountDto result = bankAccountOperationsService.deposit(accountNumber, depositAmount);
