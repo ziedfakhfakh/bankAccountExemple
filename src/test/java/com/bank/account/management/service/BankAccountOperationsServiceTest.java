@@ -3,12 +3,14 @@ package com.bank.account.management.service;
 import com.bank.account.management.dto.BankAccountDto;
 import com.bank.account.management.mapper.BankAccountMapper;
 import com.bank.account.management.model.BankAccount;
+import com.bank.account.management.model.CurrentAccount;
 import com.bank.account.management.model.type.BankAccountType;
 import com.bank.account.management.repository.BankAccountRepository;
 import com.bank.account.management.service.impl.BankAccountOperationsServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.bank.account.management.model.type.AccountTransactionType;
@@ -80,8 +82,79 @@ class BankAccountOperationsServiceTest {
         assertEquals("Bank account with number: 987654321 not found", exception.getMessage());
         verify(bankAccountRepository, times(1)).findByAccountNumber(accountNumber);
         verify(bankAccountRepository, never()).save(any(BankAccount.class));
-
     }
+
+
+    @Test
+    void testDeposit_withInValidData_withAmountNotValid() {
+        //GIVEN
+        CurrentAccount bankAccount = CurrentAccount.builder()
+                .accountNumber("123456")
+                .balance(0.0)
+                .overdraft(50.0)
+                .build();
+        //WHEN
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> bankAccountOperationsService.deposit("123456", -200));
+
+        //THEN
+        assertEquals("The amount must be greaten than 0", exception.getMessage());
+    }
+
+    @Test
+    void testWithdrawal_withValidData() {
+        CurrentAccount bankAccount = CurrentAccount.builder()
+                .accountNumber("123456")
+                .balance(500.0)
+                .build();
+        BankAccountDto bankAccountDto = new BankAccountDto("123456", BankAccountType.CURRENT_ACCOUNT, 520.0, null);
+
+        Mockito.when(bankAccountRepository.findByAccountNumber("123456"))
+                .thenReturn(Optional.of(bankAccount));
+        Mockito.when(bankAccountMapper.toBankAccountDto(Mockito.any(BankAccount.class)))
+                .thenReturn(bankAccountDto);
+        Mockito.when(bankAccountRepository.save(Mockito.any(BankAccount.class)))
+                .thenReturn(bankAccount);
+        BankAccountDto result = bankAccountOperationsService.withdrawal("123456", -100.0);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(520.0, result.balance());
+        Mockito.verify(bankAccountRepository).save(bankAccount);
+    }
+
+
+    @Test
+    void testWithdrawal_withInValidData_withNoBalanceEnough() {
+        //GIVEN
+        CurrentAccount bankAccount = CurrentAccount.builder()
+                .accountNumber("123456")
+                .balance(0.0)
+                .overdraft(50.0)
+                .build();
+        //WHEN
+        Mockito.when(bankAccountRepository.findByAccountNumber("123456"))
+                .thenReturn(Optional.of(bankAccount));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> bankAccountOperationsService.withdrawal("123456", -200));
+
+        //THEN
+        assertEquals("There is not enough balance to withdraw the following amount: -200.0", exception.getMessage());
+        verify(bankAccountRepository, times(1)).findByAccountNumber("123456");
+    }
+
+    @Test
+    void testWithdrawal_withInValidData_withAmountNotValid() {
+        //GIVEN
+        CurrentAccount bankAccount = CurrentAccount.builder()
+                .accountNumber("123456")
+                .balance(0.0)
+                .overdraft(50.0)
+                .build();
+        //WHEN
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> bankAccountOperationsService.withdrawal("123456", 200));
+
+        //THEN
+        assertEquals("The amount must be less than 0", exception.getMessage());
+    }
+
+
 
 
 }
